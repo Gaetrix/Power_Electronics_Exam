@@ -1,0 +1,22 @@
+#models
+.model D D(Ron=1m Roff=10Meg)
+.model ideal_sw SW(Ron=1m Roff=1Meg vt= 2 Vh=0.5)
+
+.param vin = 12
+.param vo = 3.3
+.param fs = 10k
+.param R = 1.2
+.param dI = 0.2
+.param dV = 0.02
+.param D = vo/vin
+.param Ts = 1/fs
+
+.param Io = vo/R
+.param Ir = Io*dI
+.param Vr = vo*dV
+
+.param L = vo*(1-D)/(Ir*fs) 
+.param C = vo*(1-D)/(8*Vr*L*fs*fs) 
+
+.meas dI_calc param dI
+.meas dV_calc param dV
