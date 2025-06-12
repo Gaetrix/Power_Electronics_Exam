@@ -10,3 +10,5 @@
 # 13-06-25
 =>  - Successfully running the open loop buck converter simulation in PLECS.
     - I think i will change my python code to file.ipynb as it helps me lots in visualizing the plot.
+    - Successfully create file.ipynb
+    - I decide to reorganize files into folders
