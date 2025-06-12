@@ -1,0 +1,24 @@
+% Parameter dasar
+vin = 36;        % Input voltage [V]
+vo = 3.3;        % Output voltage [V]
+fs = 10e3;       % Switching frequency [Hz]
+R = 1.2;         % Load resistance [Ohm]
+dI = 0.2;        % Current ripple fraction
+dV = 0.02;       % Voltage ripple fraction
+
+% Duty cycle dan periode switching
+D = vo / vin;
+Ts = 1 / fs;
+
+% Arus beban rata-rata dan ripple
+Io = vo / R;
+Ir = Io * dI;    % Ripple current
+Vr = vo * dV;    % Ripple voltage
+
+% Induktansi dan kapasitansi hasil desain
+L = vo * (1 - D) / (Ir * fs);
+C = vo * (1 - D) / (8 * Vr * L * fs^2);
+
+% (Opsional) Tampilkan hasil ke log
+disp(['L = ', num2str(L), ' H']);
+disp(['C = ', num2str(C), ' F']);
