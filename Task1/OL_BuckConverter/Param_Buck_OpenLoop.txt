@@ -1,5 +1,5 @@
 % Parameter dasar
-vin = 36;        % Input voltage [V]
+vin = 12;        % Input voltage [V]
 vo = 3.3;        % Output voltage [V]
 fs = 10e3;       % Switching frequency [Hz]
 R = 1.2;         % Load resistance [Ohm]
