@@ -1,0 +1,12 @@
+# 11-06-25
+=>  - Create an open loop Buck Converter using LTSpice with including paramTask1.txt as its parameters.
+    - Create python code for plotting LTSpice simulation by using its data.csv, and that data.csv is BuckConverter.csv which the result of the simulation
+      of our Open loop buck converter.
+
+# 12-06-25
+=>  - I'm trying to use PLECS instead of LTSpice as PLECS provides a lot things such transfer function block, PI Controller, etc which
+      LTSpice doesn't have it (in LTSpice I have to build those things by myself so i prefer to use PLECS).
+
+# 13-06-25
+=>  - Successfully running the open loop buck converter simulation in PLECS.
+    - I think i will change my python code to file.ipynb as it helps me lots in visualizing the plot.
