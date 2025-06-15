@@ -12,3 +12,9 @@
     - I think i will change my python code to file.ipynb as it helps me lots in visualizing the plot.
     - Successfully create file.ipynb
     - I decide to reorganize files into folders
+
+# 15-06-25
+=>  - Troubleshooting Cascaded buck converter design.
+
+# 16-06-25
+=>  - Successfully create a cascaded buck converter design.
