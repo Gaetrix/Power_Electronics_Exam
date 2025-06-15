@@ -18,3 +18,5 @@
 
 # 16-06-25
 =>  - Successfully create a cascaded buck converter design.
+    - Successfully convert cascaded simulation into file.csv
+    - Successfully plot cascaded buck converter in py and ipynb files.
