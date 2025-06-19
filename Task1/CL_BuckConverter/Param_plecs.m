@@ -1,7 +1,7 @@
 % Parameter dasar
-vin = 12;        % Input voltage [V]
-vo = 3.3;        % Output voltage [V]
-fs = 10e3;       % Switching frequency [Hz]
+vin = 24;        % Input voltage [V]
+vo = 7;        % Output voltage [V]
+fs = 50e3;       % Switching frequency [Hz]
 R = 1.2;         % Load resistance [Ohm]
 dI = 0.2;        % Current ripple fraction
 dV = 0.02;       % Voltage ripple fraction

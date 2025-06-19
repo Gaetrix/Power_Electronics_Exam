@@ -54,8 +54,8 @@ Plecs {
   ScriptsDialogSplitterPos "100"
   Schematic {
     Location      [0, 26; 1536, 776]
-    ZoomFactor    0.763607
-    SliderPosition [0, 0]
+    ZoomFactor    1
+    SliderPosition [356, 225]
     ShowBrowser   off
     BrowserWidth  100
     Component {
@@ -107,20 +107,6 @@ Plecs {
       Parameter {
         Variable      "v_init"
         Value         "0"
-        Show          off
-      }
-    }
-    Component {
-      Type          Resistor
-      Name          "R1"
-      Show          on
-      Position      [1140, 385]
-      Direction     up
-      Flipped       off
-      LabelPosition east
-      Parameter {
-        Variable      "R"
-        Value         "R"
         Show          off
       }
     }
@@ -767,7 +753,7 @@ Plecs {
       }
       Parameter {
         Variable      "kp"
-        Value         "2*Kp"
+        Value         "3*Kp"
         Show          off
       }
       Parameter {
@@ -1041,11 +1027,11 @@ Plecs {
       Direction     up
       Flipped       off
       LabelPosition south
-      Location      [0, 26; 1536, 843]
+      Location      [0, 26; 1536, 849]
       State         "AAAA/wAAAAD9AAAAAgAAAAEAAAAAAAAAAPwCAAAAA/sAAAAQAFoAbwBvA"
 "G0AQQByAGUAYQAAAAAA/////wAAADYA////+wAAABQAUwBhAHYAZQBkAFYAaQBlAHcAcwAAAAAA//"
 "///wAAAGgA////+wAAAAwAVAByAGEAYwBlAHMAAAAAAP////8AAABoAP///wAAAAMAAAYAAAAAYvw"
-"BAAAAAfsAAAAUAEQAYQB0AGEAVwBpAGQAZwBlAHQBAAAAAAAABgAAAABQAP///wAABgAAAAKwAAAA"
+"BAAAAAfsAAAAUAEQAYQB0AGEAVwBpAGQAZwBlAHQBAAAAAAAABgAAAABQAP///wAABgAAAAK2AAAA"
 "BAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAOAFQAbwBvAGwAQgBhAHIBAAAAAP////8AAAAAA"
 "AAAAA=="
       SavedViews    "AAAAAgAAAAA="
@@ -1366,30 +1352,6 @@ Plecs {
     }
     Component {
       Type          Goto
-      Name          "Goto4"
-      Show          off
-      Position      [280, 635]
-      Direction     right
-      Flipped       off
-      LabelPosition south
-      Parameter {
-        Variable      "Tag"
-        Value         "vr"
-        Show          off
-      }
-      Parameter {
-        Variable      "Visibility"
-        Value         "1"
-        Show          off
-      }
-      Parameter {
-        Variable      "NoMatchingCounterpartAction"
-        Value         "2"
-        Show          off
-      }
-    }
-    Component {
-      Type          Goto
       Name          "Goto5"
       Show          off
       Position      [1595, 805]
@@ -1658,7 +1620,7 @@ Plecs {
       }
       Parameter {
         Variable      "Before"
-        Value         "1"
+        Value         "15"
         Show          off
       }
       Parameter {
@@ -1684,7 +1646,7 @@ Plecs {
       Frame         [-40, -25; 40, 25]
       Parameter {
         Variable      "cont_type"
-        Value         "3"
+        Value         "1"
         Show          off
       }
       Parameter {
@@ -1694,12 +1656,12 @@ Plecs {
       }
       Parameter {
         Variable      "kp"
-        Value         "5*Kp"
+        Value         "4*Kp"
         Show          off
       }
       Parameter {
         Variable      "ki"
-        Value         "3*Ki"
+        Value         "4*Ki"
         Show          off
       }
       Parameter {
@@ -2498,6 +2460,61 @@ Plecs {
         }
       }
     }
+    Component {
+      Type          Reference
+      SrcComponent  "Components/Electrical/Passive Components/R3"
+      Name          "R3"
+      Show          on
+      Position      [1140, 385]
+      Direction     down
+      Flipped       on
+      LabelPosition west
+      Frame         [-8, -15; 8, 15]
+      Terminal {
+        Type          Port
+        Position      [0, -20]
+        Direction     up
+      }
+      Terminal {
+        Type          Port
+        Position      [0, 20]
+        Direction     down
+      }
+      Terminal {
+        Type          Input
+        Position      [-10, 10]
+        Direction     left
+      }
+    }
+    Component {
+      Type          Step
+      Name          "Step1"
+      Show          on
+      Position      [1130, 480]
+      Direction     right
+      Flipped       off
+      LabelPosition south
+      Parameter {
+        Variable      "Time"
+        Value         "7"
+        Show          off
+      }
+      Parameter {
+        Variable      "Before"
+        Value         "2.4"
+        Show          off
+      }
+      Parameter {
+        Variable      "After"
+        Value         "R"
+        Show          off
+      }
+      Parameter {
+        Variable      "DataType"
+        Value         "10"
+        Show          off
+      }
+    }
     Connection {
       Type          Wire
       SrcComponent  "C1"
@@ -2510,7 +2527,7 @@ Plecs {
       Branch {
         Points        [1140, 345]
         Branch {
-          DstComponent  "R1"
+          DstComponent  "R3"
           DstTerminal   1
         }
         Branch {
@@ -2528,7 +2545,7 @@ Plecs {
       Branch {
         Points        [1140, 425]
         Branch {
-          DstComponent  "R1"
+          DstComponent  "R3"
           DstTerminal   2
         }
         Branch {
@@ -2843,20 +2860,6 @@ Plecs {
     }
     Connection {
       Type          Signal
-      SrcComponent  "Step"
-      SrcTerminal   1
-      Points        [260, 675]
-      Branch {
-        DstComponent  "Goto4"
-        DstTerminal   1
-      }
-      Branch {
-        DstComponent  "Sum4"
-        DstTerminal   2
-      }
-    }
-    Connection {
-      Type          Signal
       SrcComponent  "Sum6"
       SrcTerminal   1
       DstComponent  "Continuous PID\nController3"
@@ -3058,6 +3061,21 @@ Plecs {
       Points        [1385, 535]
       DstComponent  "Scope8"
       DstTerminal   2
+    }
+    Connection {
+      Type          Signal
+      SrcComponent  "Step"
+      SrcTerminal   1
+      DstComponent  "Sum4"
+      DstTerminal   2
+    }
+    Connection {
+      Type          Signal
+      SrcComponent  "Step1"
+      SrcTerminal   1
+      Points        [1165, 480]
+      DstComponent  "R3"
+      DstTerminal   3
     }
   }
   Script {
