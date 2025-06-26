@@ -11,7 +11,7 @@
 =>  - Successfully running the open loop buck converter simulation in PLECS.
     - I think i will change my python code to file.ipynb as it helps me lots in visualizing the plot.
     - Successfully create file.ipynb
-    - I decide to reorganize files into folders
+    - I decided to reorganize files into folders
 
 # 15-06-25
 =>  - Troubleshooting Cascaded buck converter design.
@@ -20,3 +20,16 @@
 =>  - Successfully create a cascaded buck converter design.
     - Successfully convert cascaded simulation into file.csv
     - Successfully plot cascaded buck converter in py and ipynb files.
+
+# 18-06-2025
+=?  - I start to look for some references about Task 2.
+
+# 21-06-2025
+=>  - Still look for some references about Task 2.
+
+# 24-06-2025
+=>  - Deciding the PV Module for simulation.
+    - Try to simulate the system
+
+# 26-06-2025
+=>  - Try to modified some parameters which needed for simulation.
