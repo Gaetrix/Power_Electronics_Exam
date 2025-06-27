@@ -33,3 +33,6 @@
 
 # 26-06-2025
 =>  - Try to modified some parameters which needed for simulation.
+
+# 27-06-2025
+=>  - Finishing 
