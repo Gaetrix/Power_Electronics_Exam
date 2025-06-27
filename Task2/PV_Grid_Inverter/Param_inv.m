@@ -2,73 +2,80 @@
 % Parameter 3-PH Inverter
 % Will be placed in the same folder as 3P_PV_Grid_Inverter.plecs
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Grid parameters (50 Hz 3-phase)
-V_gpeak = 230*sqrt(2);     % 230 Vrms phase voltage → 325.3 V peak
-R_g = 2;                   % Grid resistance (typical)
-L_g = 1e-3;                % Grid inductance
-f_g = 50;                  % Grid frequency [Hz]
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Grid parameters
+V_gpeak = 230*sqrt(2);
+R_g = 2;
+L_g = 1e-3;
+f_g = 50;
+
+% DC-link
+C_dc = 53e-3; 
+V_dc = 810;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% DC-link voltage
-C_dc = 80e-3;              % DC-link capacitance [F] → naikkan sedikit karena daya besar
-V_dc = 810;                % DC-link voltage sesuai PV array output
+% Grid side converter
+P_n = 10000;
+f_sw = 10e3; 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Grid-side converter
-P_n = 13000;               % Nominal power [W], sesuai output array
-f_sw = 10e3;               % Switching frequency [Hz] – dinaikkan untuk perbaikan kualitas sinyal
+V_grms = V_gpeak/sqrt(2);
+I_grms_max = P_n/3/V_grms;
+I_gpeak_max = I_grms_max*sqrt(2);
+I_gpp_max = I_gpeak_max*2;
 
-V_grms = V_gpeak/sqrt(2);  % = 230 V
-I_grms_max = P_n / (3 * V_grms);       % Phase current (RMS)
-I_gpeak_max = I_grms_max * sqrt(2);    % Peak current
-I_gpp_max = 2 * I_gpeak_max;           % Peak-to-peak current (2 × peak)
+% LCL filter design
+THD = 0.04;
+I_hfpp_max = 0.2*I_gpeak_max;
+L_f1 = V_gpeak/(V_dc/sqrt(3))*cos(pi/6)*(2/3*V_dc - V_gpeak)/(I_hfpp_max*f_sw);
+R_f1 = 0;
+L_f2 = L_f1*0.15;
+C_f = 1/(L_f2*(2*pi*f_sw*10^(20*log10(I_gpp_max*THD/I_hfpp_max)/40))^2);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% LCL Filter Design
-THD = 0.04;                           % Target max THD (4%)
-I_hfpp_max = 0.2 * I_gpeak_max;       % 20% ripple current
-% Induktor filter sisi inverter:
-L_f1 = V_gpeak / (V_dc/sqrt(3)) * cos(pi/6) * (2/3*V_dc - V_gpeak) / (I_hfpp_max * f_sw);
-R_f1 = 0;                             % Resistansi filter sisi inverter
-L_f2 = L_f1 * 0.15;                   % Induktor sisi grid (biasanya 10–20% dari L1)
-% Kapasitor filter:
-C_f = 1 / (L_f2 * (2 * pi * f_sw * 10^(20 * log10(I_gpp_max * THD / I_hfpp_max)/40))^2);
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Limitation
-I_f_max = 20;  % Arus maksimum yang diizinkan (limit proteksi kontrol arus)
+I_f_max = 20;
+
+% Current control
+alpha_f = 100;
+R_res_a = 1e-3; % Active damping resistance for resonance elimitation
+R_gc_a = alpha_f*(L_f1 + L_f2) - R_f1;
+K_gc_pd = alpha_f*(L_f1 + L_f2);
+K_gc_id = alpha_f*(R_f1+R_gc_a);
+K_gc_pq = alpha_f*(L_f1 + L_f2);
+K_gc_iq = alpha_f*(R_f1+R_gc_a);
+
+% DC-link voltage control
+alpha_W = 10;
+G_gc_a_W = alpha_W*C_dc/(6 * V_gpeak *sqrt(3)/2);
+K_gc_pW = -alpha_W*C_dc/(6 * V_gpeak *sqrt(3)/2); % sqrt(3) for delta-y transformer, /2 for rms value
+K_gc_iW = -alpha_W*G_gc_a_W;
+K_gc_b = 10; % anti-windup
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Current Control Gains (inner loop)
-alpha_f = 100;                           % Bandwidth (gain multiplier)
-R_res_a = 1e-3;                          % Active damping resistance
+% Solar panel behavior: Models a PV string comprising BP365 65W panels.
 
-R_gc_a = alpha_f * (L_f1 + L_f2) - R_f1;
-K_gc_pd = alpha_f * (L_f1 + L_f2);       % Proportional gain (d-axis)
-K_gc_id = alpha_f * (R_f1 + R_gc_a);     % Integral gain (d-axis)
-K_gc_pq = alpha_f * (L_f1 + L_f2);       % Proportional gain (q-axis)
-K_gc_iq = alpha_f * (R_f1 + R_gc_a);     % Integral gain (q-axis)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% DC-link voltage controller (outer loop)
-alpha_W = 10;  % PI gain multiplier
-G_gc_a_W = alpha_W * C_dc / (6 * V_gpeak * sqrt(3)/2);     % plant gain
-K_gc_pW = -alpha_W * C_dc / (6 * V_gpeak * sqrt(3)/2);     % proportional gain
-K_gc_iW = -alpha_W * G_gc_a_W;                             % integral gain
-K_gc_b = 10;  % anti-windup gain
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% PV Module: HSL60 240W
-% Array configuration: 27 series × 2 parallel = 54 modules total
-% Output approx. 13 kW, 810 V, 16.04 A at STC
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-PV_HSL60.V_vec = linspace(0, 45, 22);  % 0–45 V, Voc = 37.3 V, lebih lebar sedikit untuk margin
-PV_HSL60.Sun_vec = 0:0.1:1;
-
-% Arus saat irradiance 1 kW/m² (100%) – linear approximation
-I_1000 = [0 1.05 2.10 3.15 4.20 5.25 6.30 7.00 7.50 7.90 8.02 8.05 8.00 7.80 7.50 7.00 6.00 4.50 3.00 1.50 0.5 0];
-% Skala linear arus berdasarkan irradiance:
-for i = 1:length(PV_HSL60.Sun_vec)
-    PV_HSL60.I(i,:) = I_1000 * PV_HSL60.Sun_vec(i);
-end
+PV.V_vec = [0.000 0.050 10.60 11.95 12.75 13.65 14.45 14.85 15.65 16.35 ...
+             17.15 17.95 18.35 19.05 19.95 20.35 21.05 21.35 21.75 22.05 22.15 25];
+PV.Sun_vec = [0:0.1:1];
+PV.I = [0 0.3989 0.7979 1.1969 1.5959 1.9949 2.3939 2.7929 3.1919 3.5909 3.9899
+0 0.3989 0.7979 1.1969 1.5959 1.9949 2.3939 2.7929 3.1919 3.5909 3.9899
+0 0.3976 0.7965 1.1955 1.5944 1.9933 2.3922 2.7910 3.1899 3.5888 3.9877
+0 0.3955 0.7943 1.1931 1.5918 1.9906 2.3893 2.7880 3.1867 3.5854 3.9840
+0 0.3930 0.7916 1.1902 1.5888 1.9873 2.3858 2.7843 3.1828 3.5812 3.9796
+0 0.3877 0.7860 1.1842 1.5824 1.9806 2.3787 2.7767 3.1747 3.5726 3.9705
+0 0.3792 0.7770 1.1747 1.5723 1.9698 2.3672 2.7646 3.1618 3.5589 3.9559
+0 0.3729 0.7703 1.1675 1.5647 1.9617 2.3586 2.7554 3.1521 3.5486 3.9449
+0 0.3534 0.7495 1.1455 1.5413 1.9369 2.3323 2.7274 3.1224 3.5170 3.9114
+0 0.3248 0.7192 1.1133 1.5071 1.9006 2.2938 2.6866 3.0790 3.4710 3.8626
+0 0.2701 0.6611 1.0517 1.4418 1.8313 2.2203 2.6086 2.9964 3.3835 3.7698
+0 0.1762 0.5617 0.9464 1.3302 1.7132 2.0952 2.4763 2.8564 3.2353 3.6132
+0 0.1071 0.4886 0.8690 1.2485 1.6268 2.0039 2.3798 2.7545 3.1278 3.4997
+0 0 0.3062 0.6766 1.0454 1.4126 1.7781 2.1419 2.5038 2.8639 3.2220
+0 0 0 0.2764 0.6250 0.9712 1.3150 1.6562 1.9948 2.3307 2.6638
+0 0 0 0.0242 0.3612 0.6954 1.0269 1.3554 1.6810 2.0036 2.3232
+0 0 0 0 0 0.0659 0.3724 0.6755 0.9752 1.2715 1.5643
+0 0 0 0 0 0 0.0270 0.3182 0.6060 0.8901 1.1707
+0 0 0 0 0 0 0 0 0.0479 0.3156 0.5796
+0 0 0 0 0 0 0 0 0 0 0.0863
+0 0 0 0 0 0 0 0 0 0 0
+0 0 0 0 0 0 0 0 0 0 0];
