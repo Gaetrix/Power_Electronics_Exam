@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 # Nama file CSV hasil ekspor dari PLECS
-filename = "Cascaded.csv"
+filename = "OpenLoop.csv"
 
 # Cek apakah file ada
 if not os.path.exists(filename):
